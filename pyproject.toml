@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ConfigLoader"
+version = "1.0.1"
+authors = [
+    { name="Disturbo", email="nottodisturb.disturbo@gmail.com" }
+]
+description = "Tool to ensure correct config files"
+readme = "README.md"
+license = {text = "MIT"}
+
+[project.urls]
+"GitHub" = "https://github.com/NotToDisturb/ConfigLoader"
+
+[tool.setuptools]
+packages = ["configloader"]

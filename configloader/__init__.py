@@ -3,13 +3,13 @@ import json
 
 
 class ConfigLoader(dict):
-    def __init__(self, path, validators):
+    def __init__(self, path: str, validators: dict):
         self.path = path
         self.validators = validators
         config = self.__load_config()
         super().__init__(config)
 
-    def __load_config(self):
+    def __load_config(self) -> dict:
         if os.path.exists(self.path):
             try:
                 with open(self.path, "rt") as config_file:
@@ -42,32 +42,35 @@ class ConfigLoader(dict):
             print("[ERROR] Created config file '" + self.path + "', fill out before running again\n")
             exit()
 
-    def __validate_paths_json(self, config):
+    def __validate_paths_json(self, config: dict) -> tuple:
         invalid_keys = []
         unexpected_keys = []
         all_keys = set(self.validators.keys()).union(set(config.keys()))
         for key in all_keys:
             validator = self.validators.get(key, None)
             if validator:
-                valid, message = validator(key, config[key])
-                if not valid:
-                    invalid_keys.append(message)
+                try:
+                    valid, message = validator(key, config[key])
+                    if not valid:
+                        invalid_keys.append(message)
+                except KeyError:
+                    invalid_keys.append(f"         - '{key}' does not exist")
             else:
                 unexpected_keys.append(key)
         return invalid_keys, unexpected_keys
 
     @staticmethod
-    def validate_nothing(key, value):
+    def validate_nothing(key: str, value: str) -> tuple:
         return True, ""
 
     @staticmethod
-    def validate_not_empty(key, value):
+    def validate_not_empty(key: str, value: str) -> tuple:
         if value == "":
             return False, f"         - '{key}' cannot be empty"
         return True, ""
 
     @staticmethod
-    def validate_folder(key, value):
+    def validate_folder(key: str, value: str) -> tuple:
         if value == "":
             return False, f"         - '{key}' cannot be empty"
         elif not os.path.exists(value):
@@ -77,7 +80,7 @@ class ConfigLoader(dict):
         return True, ""
 
     @staticmethod
-    def validate_file(key, value):
+    def validate_file(key: str, value: str) -> tuple:
         if value == "":
             return False, f"         - '{key}' cannot be empty"
         elif not os.path.exists(value):
@@ -87,7 +90,7 @@ class ConfigLoader(dict):
         return True, ""
 
     @staticmethod
-    def validate_json_file(key, value):
+    def validate_json_file(key: str, value: str) -> tuple:
         if value == "":
             return False, f"         - '{key}' cannot be empty"
         elif not os.path.exists(value):
